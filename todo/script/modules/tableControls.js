@@ -16,7 +16,7 @@ import {
 import {renderEntrance} from './entranceBlock.js';
 
 // Смена состояния кнопок
-const changeBtnsState = (input, btnOne, btnTwo) => {
+const changeBtnsState = (form, input, btnOne, btnTwo) => {
   if (!input.value) {
     btnOne.disabled = true;
     btnTwo.disabled = true;
@@ -25,6 +25,11 @@ const changeBtnsState = (input, btnOne, btnTwo) => {
   input.addEventListener('input', e => {
     btnOne.disabled = !e.target.value;
     btnTwo.disabled = !e.target.value;
+  });
+
+  form.addEventListener('reset', () => {
+    btnOne.disabled = true;
+    btnTwo.disabled = true;
   });
 };
 
@@ -297,7 +302,7 @@ const addTask = (table, form, username, input, saveBtn, delBtn) => {
     addTaskToUserStorage(username, taskObj);
 
     form.reset();
-    changeBtnsState(input, saveBtn, delBtn);
+    changeBtnsState(form, input, saveBtn, delBtn);
   });
 };
 

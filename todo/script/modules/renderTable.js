@@ -52,7 +52,7 @@ const renderTable = username => {
   wrapper.append(title, actions, tableWrapper);
   document.body.append(header, wrapper);
 
-  changeBtnsState(input, saveBtn, delBtn);
+  changeBtnsState(actions, input, saveBtn, delBtn);
 
   addTask(tbody, actions, username, input, saveBtn, delBtn);
 };
