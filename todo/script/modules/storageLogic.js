@@ -85,23 +85,12 @@ const setUser = name => {
 
   const objTemplate = {
     user: name,
-    tasksCounter: 0,
     tasks: [],
   };
 
   localStorage.setItem(name, JSON.stringify(objTemplate));
 
   return name;
-};
-
-// Повысить счетчик задач пользователя
-const increaseTasksNumber = username => {
-  const user = getItemFromStorage(username);
-  user.tasksCounter += 1;
-  const number = user.tasksCounter;
-  setItemBackToStorage(username, user);
-
-  return number;
 };
 
 // Добавить задачу в storage пользователя
@@ -118,6 +107,5 @@ export {
   newUniqueId,
   getItemFromStorage,
   setItemBackToStorage,
-  increaseTasksNumber,
   addTaskToUserStorage,
 };

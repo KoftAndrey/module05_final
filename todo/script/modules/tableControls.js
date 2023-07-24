@@ -2,7 +2,6 @@ import {
   newUniqueId,
   getItemFromStorage,
   setItemBackToStorage,
-  increaseTasksNumber,
   addTaskToUserStorage,
 } from './storageLogic.js';
 
@@ -30,6 +29,14 @@ const changeBtnsState = (form, input, btnOne, btnTwo) => {
   form.addEventListener('reset', () => {
     btnOne.disabled = true;
     btnTwo.disabled = true;
+  });
+};
+
+// Обновить нумерацию задач в таблице
+const resetTaskNumbers = (table) => {
+  const rows = Array.from(table.rows);
+  rows.forEach(row => {
+    if (row.rowIndex !== 0) row.cells[1].textContent = row.rowIndex;
   });
 };
 
@@ -97,13 +104,14 @@ const loadTaskFromStorage = (name, id) => {
 const renderEditForm = (taskStorage, currentRow) => {
   const editRow = crerateEditForm(
       taskStorage.id,
-      taskStorage.number,
       taskStorage.task,
       taskStorage.status,
       taskStorage.priority,
   );
 
   currentRow.replaceWith(editRow);
+
+  editRow.number.textContent = editRow.rowIndex;
 
   return editRow;
 };
@@ -125,13 +133,13 @@ const checkEditedTaskStatus = (row, priority, status) => {
 };
 
 // Изменить задачу в таблице
-const changeTaskRow = (form, row, taskText, priority, status, controlTask, name) => {
+const changeTaskRow = (form, table, row, taskText, priority, status, controlTask, name) => {
   row.cells[2].textContent = taskText;
   row.cells[3].textContent = priority;
   row.cells[4].textContent = status;
 
   checkEditedTaskStatus(row, priority, status);
-  controlTask(row, name);
+  controlTask(table, row, name);
   form.replaceWith(row);
 };
 
@@ -155,11 +163,11 @@ const setBackToStorage = (name, id, task) => {
 };
 
 // Управление формой редактирования
-const editFormControl = (name, id, task, editRow, editRowForm, reservedRow, controlTask) => {
+const editFormControl = (name, id, task, table, editRow, editRowForm, reservedRow, controlTask) => {
   editRowForm.addEventListener('submit', e => {
     const {taskText, priority, status} = gatherEditFormData(e);
 
-    changeTaskRow(editRow, reservedRow, taskText, priority, status, controlTask, name);
+    changeTaskRow(editRow, table, reservedRow, taskText, priority, status, controlTask, name);
 
     changeTaskStorage(task, taskText, priority, status);
 
@@ -170,20 +178,20 @@ const editFormControl = (name, id, task, editRow, editRowForm, reservedRow, cont
   editRow.addEventListener('click', e => {
     if (e.target.classList.contains('cancelBtn')) {
       editRow.replaceWith(reservedRow);
-      controlTask(reservedRow, name);
+      controlTask(table, reservedRow, name);
     }
   });
 };
 
 // Изменить задачу везде
-const editTask = (e, name, controlTask) => {
+const editTask = (e, name, table, controlTask) => {
   const currentRow = e.target.closest('tr');
   const reservedRow = currentRow.cloneNode(true);
   const id = getTaskRowId(e);
   const taskStorage = loadTaskFromStorage(name, id);
   const editRow = renderEditForm(taskStorage, currentRow);
 
-  editFormControl(name, id, taskStorage, editRow, editRow.form, reservedRow, controlTask);
+  editFormControl(name, id, taskStorage, table, editRow, editRow.form, reservedRow, controlTask);
 };
 //  ===================================================================
 
@@ -254,13 +262,16 @@ const deleteTask = (e, name) => {
 
 
 // УПРАВЛЕНИЕ ТАБЛИЦЕЙ
-const controlTask = (row, name) => {
+const controlTask = (table, row, name) => {
   row.addEventListener('click', e => {
-    if (e.target.classList.contains('editBtn')) editTask(e, name, controlTask);
+    if (e.target.classList.contains('editBtn')) editTask(e, name, table, controlTask);
 
     if (e.target.classList.contains('doneBtn')) finishTask(e, name);
 
-    if (e.target.classList.contains('delBtn')) deleteTask(e, name);
+    if (e.target.classList.contains('delBtn')) {
+      deleteTask(e, name);
+      resetTaskNumbers(table);
+    }
   });
 };
 //  ===================================================================
@@ -270,7 +281,7 @@ const controlTask = (row, name) => {
 // Добавить новую задачу в таблицу
 const addTaskRow = (taskObj, name, table) => {
   const newTaskRow = createTaskRow(taskObj);
-  controlTask(newTaskRow, name);
+  controlTask(table, newTaskRow, name);
   table.prepend(newTaskRow);
 };
 
@@ -278,7 +289,6 @@ const addTaskRow = (taskObj, name, table) => {
 const createTaskObj = (name, task, priority) => {
   const taskObj = {
     id: newUniqueId(),
-    number: increaseTasksNumber(name),
     task,
     status: 'В процессе',
     priority,
@@ -301,6 +311,8 @@ const addTask = (table, form, username, input, saveBtn, delBtn) => {
 
     addTaskToUserStorage(username, taskObj);
 
+    resetTaskNumbers(table);
+
     form.reset();
     changeBtnsState(form, input, saveBtn, delBtn);
   });
@@ -308,6 +320,7 @@ const addTask = (table, form, username, input, saveBtn, delBtn) => {
 
 export {
   changeBtnsState,
+  resetTaskNumbers,
   headerControls,
   addTask,
   controlTask,

@@ -10,6 +10,7 @@ import {
 
 import {
   changeBtnsState,
+  resetTaskNumbers,
   headerControls,
   addTask,
   controlTask,
@@ -44,7 +45,7 @@ const renderTable = username => {
   headerControls(header, username, wrapper);
 
   rows.forEach(row => {
-    controlTask(row, username);
+    controlTask(table, row, username);
   });
 
   tbody.append(...rows);
@@ -55,6 +56,8 @@ const renderTable = username => {
   changeBtnsState(actions, input, saveBtn, delBtn);
 
   addTask(tbody, actions, username, input, saveBtn, delBtn);
+
+  resetTaskNumbers(table);
 };
 
 export {renderTable};

@@ -254,7 +254,7 @@ const checkTaskPriority = (row, priority) => {
 };
 
 // Создать блок задачи
-const createTaskRow = ({id, number, task, priority, status}) => {
+const createTaskRow = ({id, task, priority, status}) => {
   const row = document.createElement('tr');
 
   const idCell = document.createElement('td');
@@ -262,7 +262,6 @@ const createTaskRow = ({id, number, task, priority, status}) => {
   idCell.classList.add('d-none');
 
   const numCell = document.createElement('td');
-  numCell.textContent = number;
   numCell.classList.add('col-md-1');
 
   const taskCell = document.createElement('td');
@@ -319,7 +318,7 @@ const selectPriority = (select, priority) => {
 };
 
 // Создать форму редактирования задачи
-const crerateEditForm = (id, number, task, status, priority) => {
+const crerateEditForm = (id, task, status, priority) => {
   const editRow = document.createElement('tr');
   editRow.classList.add('table-info');
 
@@ -331,8 +330,6 @@ const crerateEditForm = (id, number, task, status, priority) => {
   formCell.setAttribute('colspan', '5');
 
   const numCellDiv = document.createElement('div');
-  const num = number + '';
-  numCellDiv.textContent = num;
   numCellDiv.classList.add('col-1');
 
   const form = document.createElement('form');
@@ -412,6 +409,7 @@ const crerateEditForm = (id, number, task, status, priority) => {
   editRow.append(idCell, formCell);
 
   editRow.form = form;
+  editRow.number = numCellDiv;
 
   return editRow;
 };
